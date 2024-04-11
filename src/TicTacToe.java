@@ -44,16 +44,20 @@ public class TicTacToe {
             for (int c = 0; c < 3; c++) {
                 JButton tile = new JButton();
                 board[r][c] = tile;
-                tile.setBackground(Color.white);
-                tile.setForeground(Color.darkGray);
+                tile.setBackground(Color.darkGray);
+                tile.setForeground(Color.white);
                 tile.setFont(new Font("Segoe UI", Font.BOLD, 100));
                 tile.addActionListener(e -> {
                     if (gameOver) return;
                     JButton tile1 = (JButton) e.getSource();
                     if (Objects.equals(tile1.getText(), "")) {
                         tile1.setText(currentPlayer);
-                        currentPlayer = Objects.equals(currentPlayer, playerX) ? playerO : playerX;
-                        textAbove.setText("Turn: " + currentPlayer);
+                        checkWinner();
+                        if (!gameOver) {
+                            currentPlayer = Objects.equals(currentPlayer, playerX) ? playerO : playerX;
+                            textAbove.setText("Turn: " + currentPlayer);
+                        }
+
                     }
                 });
                 tile.setFocusable(false);
@@ -62,7 +66,42 @@ public class TicTacToe {
         }
     }
 
-    void checkWinner() {
+    private void checkWinner() {
+        // Горизонтальная проверка
+        for (int r = 0; r < 3; r++) {
+            if (Objects.equals(board[r][0].getText(), "")) continue;
+            if (Objects.equals(board[r][0].getText(), board[r][1].getText()) && Objects.equals(board[r][1].getText(), board[r][2].getText())) {
+                for (int i = 0; i < 3; i++) {
+                    setWinner(board[r][i]);
+                }
+                gameOver = true;
+                return;
+            }
+        }
 
+        // Вертикальная проверка
+        for (int c = 0; c < 3; c++) {
+            if (Objects.equals(board[0][c].getText(), "")) continue;
+            if (Objects.equals(board[0][c].getText(), board[1][c].getText()) && Objects.equals(board[1][c].getText(), board[2][c].getText())) {
+                for (int i = 0; i < 3; i++) {
+                    setWinner(board[i][c]);
+                }
+                gameOver = true;
+                return;
+            }
+        }
+
+        // Диагональная проверка
+        if (Objects.equals(board[0][0].getText(), board[1][1].getText()) && Objects.equals(board[1][1].getText(), board[2][2].getText()) && !Objects.equals(board[0][0].getText(), "")) {
+            for (int i = 0; i < 3; i++) {
+                setWinner(board[i][i]);
+            }
+            gameOver = true;
+        }
+    }
+
+    private void setWinner(JButton tile) {
+        tile.setForeground(Color.GREEN);
+        textAbove.setText(currentPlayer + " has won!");
     }
 }
